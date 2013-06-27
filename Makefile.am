@@ -1,4 +1,6 @@
 
+EXTRA_DIST = Readme.md
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = covmalloc.pc
 
