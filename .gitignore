@@ -12,6 +12,7 @@
 *.gcda
 *.gcno
 *.stackdump
+*.so
 *.c.*r.*
 .libs
 .deps
@@ -24,6 +25,11 @@ config.log
 config.status
 nbproject
 stamp-h1
+test_coverage
+
+# specific
+covmalloc_test.info
+test/test
 
 # distros
 *.tar.gz

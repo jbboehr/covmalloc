@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Defined if gcov is enabled */
+#undef GCOV
+
 /* Define to 1 if you have the `calloc' function. */
 #undef HAVE_CALLOC
 

@@ -11,7 +11,6 @@ extern void exit(int);
 
 static int _initialized = 0;
 static int _failure = 0;
-static int _print = 0;
 
 static void * (*real_calloc)(size_t, size_t) = NULL;
 static void * (*real_malloc)(size_t) = NULL;
@@ -19,9 +18,10 @@ static void * (*real_realloc)(void *, size_t) = NULL;
 static void * (*real_free)(void *) = NULL;
 
 #if !defined(__CYGWIN32__)
-static void * covmalloc_dl_libc(char * symbol) {
+/*static*/ void * covmalloc_dlhandle = RTLD_NEXT;
+/*static*/ void * covmalloc_dl_libc(char * symbol) {
   char * error = NULL;
-  void * fn = dlsym(RTLD_NEXT, symbol);
+  void * fn = dlsym(covmalloc_dlhandle, symbol);
   if( (error = dlerror()) != NULL ) {
     fprintf(stderr, "Error in `dlsym`: %s\n", error);
     return NULL;
@@ -30,7 +30,7 @@ static void * covmalloc_dl_libc(char * symbol) {
   }
 }
 #else
-static void * covmalloc_dl_libc(char * symbol) {
+/*static*/ void * covmalloc_dl_libc(char * symbol) {
   void * fn;
   void * handle = dlopen("libc.so");
   char * error;
@@ -51,6 +51,9 @@ static void * covmalloc_dl_libc(char * symbol) {
 
 static void __covmalloc_init(void)
 {
+  if( _initialized ) {
+    return;
+  }
   _initialized = 1;
   
   real_calloc = covmalloc_dl_libc("calloc");
@@ -58,6 +61,7 @@ static void __covmalloc_init(void)
   real_realloc = covmalloc_dl_libc("realloc");
   real_free = covmalloc_dl_libc("free");
   
+  /*
   if( real_calloc == NULL || 
       real_malloc == NULL || 
       real_realloc == NULL || 
@@ -65,13 +69,12 @@ static void __covmalloc_init(void)
     // Error message should already be printed
     exit(1);
   }
+  */
 }
 
 void * calloc(size_t __nmemb, size_t __size)
 {
-  if( !_initialized ) {
-    __covmalloc_init();
-  }
+  __covmalloc_init();
   
   // Simulate failure
   if( _failure ) {
@@ -81,19 +84,12 @@ void * calloc(size_t __nmemb, size_t __size)
   // Call actual function
   void * ret = real_calloc(__nmemb, __size);
   
-  // Print memory location
-  if( _print ) {
-    fprintf(stdout, "Calloc: %p\n", ret);
-  }
-  
   return ret;
 }
 
 void * malloc(size_t __size)
 {
-  if( !_initialized ) {
-    __covmalloc_init();
-  }
+  __covmalloc_init();
   
   // Simulate failure
   if( _failure ) {
@@ -103,19 +99,12 @@ void * malloc(size_t __size)
   // Call actual function
   void * ret = real_malloc(__size);
   
-  // Print memory location
-  if( _print ) {
-    fprintf(stdout, "Malloc: %p\n", ret);
-  }
-  
   return ret;
 }
 
 void * realloc(void * __ptr, size_t __size)
 {
-  if( !_initialized ) {
-    __covmalloc_init();
-  }
+  __covmalloc_init();
   
   // Simulate failure
   if( _failure ) {
@@ -125,19 +114,12 @@ void * realloc(void * __ptr, size_t __size)
   // Call actual function
   void * ret = real_realloc(__ptr, __size);
   
-  // Print memory location
-  if( _print ) {
-    fprintf(stdout, "Realloc: %p\n", ret);
-  }
-  
   return ret;
 }
 
 void free(void * __ptr)
 {
-  if( !_initialized ) {
-    __covmalloc_init();
-  }
+  __covmalloc_init();
   
   // Simulate failure?
   //if( _failure ) {
@@ -151,9 +133,4 @@ void free(void * __ptr)
 void covmalloc_failure(int failure)
 {
   _failure = failure;
-}
-
-void covmalloc_print(int print)
-{
-  _print = print;
 }

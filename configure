@@ -662,6 +662,8 @@ CFLAGS
 CC
 ac_ct_AR
 AR
+GCOV_FALSE
+GCOV_TRUE
 GCC_FALSE
 GCC_TRUE
 am__untar
@@ -729,6 +731,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+enable_gcov
 enable_dependency_tracking
 enable_shared
 enable_static
@@ -1367,6 +1370,7 @@ Optional Features:
   --disable-option-checking  ignore unrecognized --enable/--with options
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
+  --enable-gcov           Enable gcov
   --disable-dependency-tracking  speeds up one-time build
   --enable-dependency-tracking   do not reject slow dependency extractors
   --enable-shared[=PKGS]  build shared libraries [default=yes]
@@ -2751,12 +2755,34 @@ am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
 
 
 
+# gcov
+# Check whether --enable-gcov was given.
+if test "${enable_gcov+set}" = set; then :
+  enableval=$enable_gcov;
+fi
+
+if test "x$enable_gcov" == "xyes"; then
+
+$as_echo "#define GCOV 1" >>confdefs.h
+
+    LDFLAGS="$LDFLAGS -coverage -lgcov"
+    CFLAGS="$CFLAGS -g -O0 -coverage" # -disable-shared ?
+fi
+
  if test x$GCC = xyes; then
   GCC_TRUE=
   GCC_FALSE='#'
 else
   GCC_TRUE='#'
   GCC_FALSE=
+fi
+
+ if test x$enable_gcov = xyes; then
+  GCOV_TRUE=
+  GCOV_FALSE='#'
+else
+  GCOV_TRUE='#'
+  GCOV_FALSE=
 fi
 
 
@@ -12168,6 +12194,17 @@ CC="$lt_save_CC"
 # Only expand once:
 
 
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether ln -s works" >&5
+$as_echo_n "checking whether ln -s works... " >&6; }
+LN_S=$as_ln_s
+if test "$LN_S" = "ln -s"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no, using $LN_S" >&5
+$as_echo "no, using $LN_S" >&6; }
+fi
+
 
 # Checks for header files
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for ANSI C header files" >&5
@@ -12325,7 +12362,7 @@ fi
 # Checks for system
 
 
-ac_config_files="$ac_config_files covmalloc.pc Makefile"
+ac_config_files="$ac_config_files covmalloc.pc Makefile test/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -12446,6 +12483,10 @@ fi
 
 if test -z "${GCC_TRUE}" && test -z "${GCC_FALSE}"; then
   as_fn_error $? "conditional \"GCC\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${GCOV_TRUE}" && test -z "${GCOV_FALSE}"; then
+  as_fn_error $? "conditional \"GCOV\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${AMDEP_TRUE}" && test -z "${AMDEP_FALSE}"; then
@@ -13347,6 +13388,7 @@ do
     "libtool") CONFIG_COMMANDS="$CONFIG_COMMANDS libtool" ;;
     "covmalloc.pc") CONFIG_FILES="$CONFIG_FILES covmalloc.pc" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "test/Makefile") CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac

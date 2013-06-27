@@ -1,0 +1,20 @@
+language: c
+
+compiler:
+  - gcc
+
+before_install:
+  - sudo apt-get update -qq
+  - sudo apt-get install -qq autoconf automake bison flex gawk gcc libtool m4 make pkg-config
+
+before_script:
+  - chmod -R +x test
+
+script:
+  - autoreconf --install
+  - ./configure
+  - make test
+
+branches:
+  only:
+    - master
