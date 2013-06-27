@@ -1,5 +1,7 @@
 # covmalloc
 
+[![Build Status](https://travis-ci.org/jbboehr/covmalloc.png?branch=master)](https://travis-ci.org/jbboehr/covmalloc)
+
 Allows you to cause malloc to fail.
 
 
