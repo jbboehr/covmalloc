@@ -13,7 +13,8 @@ before_script:
 script:
   - autoreconf --install
   - ./configure
-  - make test
+  - make
+  - make check
 
 branches:
   only:
