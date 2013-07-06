@@ -35,3 +35,8 @@ b = malloc(sizeof(int)); // NULL
 covmalloc_failure(0);
 c = malloc(sizeof(int)); // ok
 ```
+
+
+## License
+
+This project is licensed under the [MIT license](http://opensource.org/licenses/MIT).
